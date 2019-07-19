@@ -3,7 +3,26 @@ const image = 'https://placehold.it/200x150';
 const cartImage = 'https://placehold.it/100x80';
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
 
-function makeGETRequest(url, callback) {
+// function makeGETRequest(url, callback) {
+// 	let xhr;
+  
+// 	if (window.XMLHttpRequest) {
+// 	  xhr = new XMLHttpRequest();
+// 	} else if (window.ActiveXObject) { 
+// 	  xhr = new ActiveXObject("Microsoft.XMLHTTP");
+// 	}
+  
+// 	xhr.onreadystatechange = function () {
+// 	  if (xhr.readyState === 4) {
+// 		callback(xhr.responseText);
+// 	  }
+// 	}
+  
+// 	xhr.open('GET', url, true);
+// 	xhr.send();
+// }
+
+function makeGETRequest(url) {
 	let xhr;
   
 	if (window.XMLHttpRequest) {
@@ -12,10 +31,17 @@ function makeGETRequest(url, callback) {
 	  xhr = new ActiveXObject("Microsoft.XMLHTTP");
 	}
   
+	
 	xhr.onreadystatechange = function () {
-	  if (xhr.readyState === 4) {
-		callback(xhr.responseText);
-	  }
+		if (xhr.readyState === 4) {
+			return new Promise((resolve, reject) => {
+				if (xhr.responseText) {
+					resolve(xhr.responseText)
+				} else {
+					reject('Error')
+				}
+			})
+		}
 	}
   
 	xhr.open('GET', url, true);
@@ -56,10 +82,15 @@ class ProductsList extends List {
 	// Почему то мой json не парсит https://raw.githubusercontent.com/lyelya86/json/master/catalogData.json
 	// Подскажите почему? в апи вставляла только https://raw.githubusercontent.com/lyelya86/json/master
 	fetchGoods () {
-		makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
-			this.goods = JSON.parse(goods);
+		makeGETRequest(`${API_URL}/catalogData.json`)
+		.then ( result => {
+			console.log(result)
+			this.goods = JSON.parse(result);
 			this._render ()
 		})
+		.catch (error => {
+			console.log(error)
+		})	
 	}
 }
 
