@@ -1,22 +1,51 @@
 //заглушки (имитация базы данных)
 const image = 'https://placehold.it/200x150';
 const cartImage = 'https://placehold.it/100x80';
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
 
-const items = ['Notebook', 'Display', 'Keyboard', 'Mouse', 'Phones', 'Router', 'USB-camera', 'Gamepad'];
-const prices = [1000, 200, 20, 10, 25, 30, 18, 24];
-const ids = [1, 2, 3, 4, 5, 6, 7, 8];
+// function makeGETRequest(url, callback) {
+// 	let xhr;
+  
+// 	if (window.XMLHttpRequest) {
+// 	  xhr = new XMLHttpRequest();
+// 	} else if (window.ActiveXObject) { 
+// 	  xhr = new ActiveXObject("Microsoft.XMLHTTP");
+// 	}
+  
+// 	xhr.onreadystatechange = function () {
+// 	  if (xhr.readyState === 4) {
+// 		callback(xhr.responseText);
+// 	  }
+// 	}
+  
+// 	xhr.open('GET', url, true);
+// 	xhr.send();
+// }
 
-function fetchData () {
-	let arr = [];
-	for (let i = 0; i < items.length; i++) {
-		arr.push ({
-			id: ids[i],
-			title: items[i],
-			price: prices[i],
-			img: image,
-		});
+function makeGETRequest(url) {
+	let xhr;
+  
+	if (window.XMLHttpRequest) {
+	  xhr = new XMLHttpRequest();
+	} else if (window.ActiveXObject) { 
+	  xhr = new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	return arr
+  
+	
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			return new Promise((resolve, reject) => {
+				if (xhr.responseText) {
+					resolve(xhr.responseText)
+				} else {
+					reject('Error')
+				}
+			})
+		}
+	}
+  
+	xhr.open('GET', url, true);
+	xhr.send();
 }
 
 //Глобальные сущности 
@@ -29,12 +58,8 @@ class List {
 		this.goods = []
 		this._init ()
 		this.allProducts = []
-		this.handleData (fetchData())
 	}
-	handleData (data) {
-		this.goods = [...data]
-		this._render ()
-	}
+
 	_init () {
 		return false
 	}
@@ -53,6 +78,20 @@ class ProductsList extends List {
 		super (container)
 	}
 
+
+	// Почему то мой json не парсит https://raw.githubusercontent.com/lyelya86/json/master/catalogData.json
+	// Подскажите почему? в апи вставляла только https://raw.githubusercontent.com/lyelya86/json/master
+	fetchGoods () {
+		makeGETRequest(`${API_URL}/catalogData.json`)
+		.then ( result => {
+			console.log(result)
+			this.goods = JSON.parse(result);
+			this._render ()
+		})
+		.catch (error => {
+			console.log(error)
+		})	
+	}
 }
 
 // class Cart extends List {
@@ -83,7 +122,7 @@ class ProductsList extends List {
 
 class Item {
 	constructor (el, img = 'https://placehold.it/200x150') {
-		this.product_name = el.title
+		this.product_name = el.product_name
 		this.price = el.price
 		this.id_product = el.id
 		this.img = img
@@ -244,5 +283,6 @@ document.querySelector ('.cart-block').addEventListener ('click', (evt) => {
 	}
 })
 
-let pr = new ProductsList()
+let list = new ProductsList ()
+list.fetchGoods ()
 let cart = new Cart()
