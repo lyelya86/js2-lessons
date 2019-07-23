@@ -13,15 +13,19 @@ let text = `One: 'Hi Mary.' Two: 'Oh, hi.'
             Two: 'It's their anniversary.'
             One: 'That's great. Well, you better get going. You don't want to be late.'
             Two: 'I'll see you next time.'
-            One: 'Sure. Bye.'`
+            One: 'Sure. Bye.' `
 
 
-const regexp = /(\s\')|(\'\s)|(\'\n)|(\n\')|(\'$)/igm
+const regexp = /(.\'\s)|(\s\'.)|(\'\n.)/igm
+
 
 console.log(text.match(regexp))
 
+text.match(regexp).forEach(function(el) {
+    el2 = el.replace(/\'/, `"`)
+    text = text.replace(el, el2)
+})
 
 
-text.replace(regexp, '+')
 
 console.log(text)
