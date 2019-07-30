@@ -12,7 +12,8 @@ let app = new Vue ({
 		cart: [],
 		catalogUrl: `/catalogData.json`,
 		value: false,
-		findText: ''
+		findText: '',
+		filter: []
 	},
 	methods: {
 		getJSON (url) {
@@ -50,20 +51,11 @@ let app = new Vue ({
 			}
 		},
 		findProduct () {
-			console.log(this.findText)
-			a = this.findText
-			//let reg = /this.findText/igm
-			//console.log(reg)
+	
+			let reg = new RegExp (this.findText, 'i')
 
 			this.products.forEach(product => {
-				console.log(product.product_name)
-				console.log(product.product_name.test(this.findText))
-
-				if (!product.product_name.test(this.findText)) {
-					this.products.splice (this.products.indexOf(product), 1)
-				}
-				console.log(products)
-			
+				this.filter = this.products.filter(product => reg.test(product.product_name))
 			})
 		}
 	}, 
@@ -72,6 +64,7 @@ let app = new Vue ({
 			.then (data => {
 				for (let el of data) {
 					this.products.push (el)
+					this.filter.push (el)
 				}
 			})
 	}

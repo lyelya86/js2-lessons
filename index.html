@@ -11,9 +11,9 @@
         <header>
             <div class="logo">E-shop</div>
             <div class="cart">
-                <form action="#" class="search-form">
+                <form action="#" class="search-form" @submit="findProduct ()">
                     <input type="text" class="search-field" v-model="findText">
-                    <button class="btn-search" type="submit" @click="findProduct ()">
+                    <button class="btn-search" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
@@ -38,7 +38,7 @@
         </header>
         <main>
             <div class="products">
-                <div class="product-item" v-for="product of products" :key="product.id_product">
+                <div class="product-item" v-for="product of filter" :key="product.id_product">
                     <img :src="imgCatalog" alt="Some img">
                     <div class="desc">
                     <h3> {{ product.product_name }} </h3>
